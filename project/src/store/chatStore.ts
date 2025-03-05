@@ -48,6 +48,10 @@ interface ChatState {
   setLoading: (loading: boolean) => void;
 }
 
+const MAX_ONLINE_AGENTS = import.meta.env.VITE_MAX_ONLINE_AGENTS || 500;
+const MAX_CHATS_PER_AGENT = import.meta.env.VITE_MAX_CHATS_PER_AGENT || 100;
+const MESSAGE_RETENTION_DAYS = import.meta.env.VITE_MESSAGE_RETENTION_DAYS || 180;
+
 // Helper to get user device and IP info
 const getUserDeviceInfo = () => {
   const parser = new UAParser();
@@ -237,6 +241,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   setCurrentAgent: (agent) => {
+    // 检查在线客服数量
+    const onlineAgents = get().chats
+      .filter(chat => chat.status === 'active')
+      .map(chat => chat.agentId)
+      .filter((id, index, self) => self.indexOf(id) === index)
+      .length;
+
+    if (onlineAgents >= MAX_ONLINE_AGENTS) {
+      throw new Error(`已达到最大在线客服数量限制 (${MAX_ONLINE_AGENTS})`);
+    }
+
     set({ currentAgent: agent });
 
     // Initialize agent settings if not already set
@@ -255,6 +270,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   acceptChat: (chatId, agentId) => {
+    // 检查客服当前对话数量
+    const agentActiveChats = get().chats.filter(
+      chat => chat.agentId === agentId && chat.status === 'active'
+    ).length;
+
+    if (agentActiveChats >= MAX_CHATS_PER_AGENT) {
+      throw new Error(`已达到单个客服最大对话数限制 (${MAX_CHATS_PER_AGENT})`);
+    }
+
     const chat = get().getChatById(chatId);
     if (!chat) return;
 
@@ -480,11 +504,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
     return chats.find(chat => chat.id === activeChat) || null;
   },
 
-  // 仅清理状态为 closed 且最后更新时间超过24小时的聊天记录
   cleanupOldChats: () => {
-    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const retentionTime = MESSAGE_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+    const cutoffTime = Date.now() - retentionTime;
+
     set((state) => ({
-      chats: state.chats.filter(chat => chat.status !== 'closed' || chat.updatedAt > oneDayAgo)
+      chats: state.chats.filter(chat =>
+        chat.status !== 'closed' || chat.updatedAt > cutoffTime
+      )
     }));
   },
 

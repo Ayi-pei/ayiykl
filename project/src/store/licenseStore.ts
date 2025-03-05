@@ -20,13 +20,15 @@ interface LicenseState {
   licenseKey: string;
 }
 
+const LICENSE_EXPIRY_DAYS = import.meta.env.VITE_LICENSE_EXPIRY_DAYS || 30;
+const LICENSE_KEY_LENGTH = import.meta.env.VITE_LICENSE_KEY_LENGTH || 16;
+
 export const useLicenseStore = create<LicenseState>((set, get) => ({
   licenseKeys: [],
   licenseKey: '',
 
-  generateLicenseKey: (expiresInDays) => {
-    // 生成16位的随机密钥
-    const key = nanoid(16);
+  generateLicenseKey: (expiresInDays = LICENSE_EXPIRY_DAYS) => {
+    const key = nanoid(LICENSE_KEY_LENGTH);
     const now = Date.now();
 
     const newLicense: License = {
