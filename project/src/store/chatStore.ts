@@ -1,7 +1,7 @@
-import { create } from 'zustand';
 import { nanoid } from 'nanoid';
-import { Chat, Message, User, Agent, Attachment, AgentSettings } from '../types';
 import { UAParser } from 'ua-parser-js';
+import { create } from 'zustand';
+import { Agent, AgentSettings, Attachment, Chat, Message, User } from '../types';
 
 interface ChatState {
   chats: Chat[];
@@ -75,11 +75,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
   initUserChat: (userName: string, agentId?: string) => {
     const userId = nanoid();
     const deviceInfo = getUserDeviceInfo();
+    const accessCode = nanoid(8);
 
     const newChat: Chat = {
       id: nanoid(),
       userId,
       userName,
+      accessCode,
       messages: [{
         id: nanoid(),
         senderId: 'system',

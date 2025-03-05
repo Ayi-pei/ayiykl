@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { LogOut, User } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { useChatStore } from '../store/chatStore';
-import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
-import { User, LogOut } from 'lucide-react';
+import { MessageList } from './MessageList';
 
 interface UserChatProps {
   chatId: string;
@@ -11,7 +11,6 @@ interface UserChatProps {
 export const UserChat: React.FC<UserChatProps> = ({ chatId }) => {
   const { getChatById, sendUserMessage, setUserOnlineStatus, currentAgent } = useChatStore();
   const chat = getChatById(chatId);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 发送欢迎消息
   useEffect(() => {

@@ -144,15 +144,15 @@ export const AgentDashboard: React.FC<AgentDashboardProps> = ({
       {/* Main content */}
       <div className="flex-1">
         {activeChat ? (
-          <AgentChatWindow chatId={activeChat} />
+          <AgentChatWindow
+            chatId={activeChat}
+            onClose={() => setActiveChat(null)}
+          />
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center p-8 bg-white rounded-lg shadow-md">
-              <MessageCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">未选择聊天</h2>
-              <p className="text-gray-600">
-                从侧边栏选择一个聊天或接受一个等待中的聊天开始。
-              </p>
+              <h2 className="text-xl font-medium mb-2">欢迎回来，{agentName}</h2>
+              <p className="text-gray-500">请从左侧选择一个对话开始</p>
             </div>
           </div>
         )}

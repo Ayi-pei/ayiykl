@@ -1,35 +1,31 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AgentDashboard } from '../components/AgentDashboard';
+import { useChatStore } from '../store/chatStore';
+import { useLicenseStore } from '../store/licenseStore';
 
 export const AgentDashboardPage: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  
-  // Get agent info from location state
-  const agentId = location.state?.agentId;
-  const agentName = location.state?.agentName;
-  
-  useEffect(() => {
-    // Redirect to login if no agent info
-    if (!agentId || !agentName) {
-      navigate('/agent/login');
-    }
-  }, [agentId, agentName, navigate]);
-  
-  const handleLogout = () => {
-    navigate('/agent/login');
-  };
-  
-  if (!agentId || !agentName) {
-    return null; // Will redirect in useEffect
+  const { currentAgent, setAuthenticated } = useChatStore();
+  const { licenseKey } = useLicenseStore();
+
+  // 如果没有登录，重定向到登录页
+  if (!currentAgent) {
+    navigate('/login');
+    return null;
   }
-  
+
+  const handleLogout = () => {
+    setAuthenticated(false);
+    navigate('/login');
+  };
+
   return (
-    <AgentDashboard 
-      agentId={agentId} 
-      agentName={agentName} 
-      onLogout={handleLogout} 
+    <AgentDashboard
+      agentId={currentAgent.id}
+      agentName={currentAgent.name}
+      licenseKey={licenseKey}
+      onLogout={handleLogout}
     />
   );
 };

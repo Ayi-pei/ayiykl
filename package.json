@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/react-avatar-editor": "^13.0.4"
+  }
+}

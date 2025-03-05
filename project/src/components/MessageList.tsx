@@ -1,30 +1,28 @@
-import React, { useRef, useEffect } from 'react';
-import { Message } from '../types';
+import React, { useEffect, useRef } from 'react';
+import { useChatStore } from '../store/chatStore';
 import { MessageBubble } from './MessageBubble';
 
 interface MessageListProps {
-  messages: Message[];
-  currentUserId: string;
+  chatId: string;
 }
 
-export const MessageList: React.FC<MessageListProps> = ({ 
-  messages, 
-  currentUserId 
-}) => {
+export const MessageList: React.FC<MessageListProps> = ({ chatId }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+  const chat = useChatStore(state => state.getChatById(chatId));
+
   useEffect(() => {
-    // Scroll to bottom when messages change
+    // 新消息时滚动到底部
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-  
+  }, [chat?.messages]);
+
+  if (!chat) return null;
+
   return (
-    <div className="space-y-4">
-      {messages.map(message => (
-        <MessageBubble 
-          key={message.id} 
-          message={message} 
-          isCurrentUser={message.senderId === currentUserId} 
+    <div className="flex flex-col space-y-4 p-4 overflow-y-auto">
+      {chat.messages.map(message => (
+        <MessageBubble
+          key={message.id}
+          message={message}
         />
       ))}
       <div ref={messagesEndRef} />

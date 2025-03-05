@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { X, Upload, MessageSquare, User, Ban, Save, QrCode, Link, Copy, Check, RefreshCw, Key } from 'lucide-react';
-import { useChatStore } from '../store/chatStore';
-import { useLicenseStore } from '../store/licenseStore';
-import AvatarEditor from 'react-avatar-editor';
-import { QRCodeSVG } from 'qrcode.react';
 import copy from 'copy-to-clipboard';
-import { nanoid } from 'nanoid';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { Ban, Check, Copy, Key, Link, MessageSquare, QrCode, RefreshCw, Save, User, X } from 'lucide-react';
+import { nanoid } from 'nanoid';
+import { QRCodeSVG } from 'qrcode.react';
+import React, { useRef, useState } from 'react';
+import AvatarEditor from 'react-avatar-editor';
+import { useChatStore } from '../store/chatStore';
+import { useLicenseStore } from '../store/licenseStore';
 
 interface AgentSettingsModalProps {
   onClose: () => void;
@@ -37,12 +37,12 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
   const [isChangingLicense, setIsChangingLicense] = useState(false);
   const [newLicenseKey, setNewLicenseKey] = useState('');
   const [licenseError, setLicenseError] = useState('');
-  
+
   const avatarEditorRef = useRef<AvatarEditor>(null);
-  
-  const { 
-    addQuickReply, 
-    removeQuickReply, 
+
+  const {
+    addQuickReply,
+    removeQuickReply,
     updateWelcomeMessage,
     blockedUsers,
     unblockUser,
@@ -51,12 +51,12 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
   } = useChatStore();
 
   const { isLicenseValid, activateLicense, getLicenseExpiry } = useLicenseStore();
-  
+
   const getAgentShortLink = () => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/chat?agent=${agentSettings?.id || ''}&token=${shareToken}`;
   };
-  
+
   const handleSaveProfile = () => {
     if (avatarEditorRef.current && avatarFile) {
       const canvas = avatarEditorRef.current.getImageScaledToCanvas();
@@ -67,7 +67,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
     }
     onClose();
   };
-  
+
   const handleAddQuickReply = () => {
     if (quickReplyTitle.trim() && quickReplyContent.trim()) {
       addQuickReply(quickReplyTitle, quickReplyContent);
@@ -75,14 +75,14 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
       setQuickReplyContent('');
     }
   };
-  
+
   const handleSaveWelcomeMessage = () => {
     if (welcomeMessage.trim()) {
       updateWelcomeMessage(welcomeMessage);
       alert('欢迎消息更新成功！');
     }
   };
-  
+
   const handleUnblockUser = (userId: string) => {
     if (window.confirm('确定要解除对此用户的拉黑吗？')) {
       unblockUser(userId);
@@ -123,7 +123,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
       } else {
         setLicenseError('密钥激活失败，可能已被其他客服使用');
       }
-    } catch (error) {
+    } catch {
       setLicenseError('更换密钥时发生错误');
     }
   };
@@ -143,7 +143,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
             <X className="h-6 w-6" />
           </button>
         </div>
-        
+
         <div className="flex flex-1 overflow-hidden">
           <div className="w-48 bg-gray-100 p-4 space-y-2">
             <button
@@ -201,12 +201,12 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
               <span>许可证</span>
             </button>
           </div>
-          
+
           <div className="flex-1 p-6 overflow-y-auto">
             {activeTab === 'profile' && (
               <div>
                 <h3 className="text-lg font-medium mb-4">个人资料设置</h3>
-                
+
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     客服名称
@@ -218,12 +218,12 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     头像
                   </label>
-                  
+
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
                       {avatarFile ? (
@@ -239,9 +239,9 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                           rotate={0}
                         />
                       ) : initialAvatar ? (
-                        <img 
-                          src={initialAvatar} 
-                          alt="当前头像" 
+                        <img
+                          src={initialAvatar}
+                          alt="当前头像"
                           className="w-[150px] h-[150px] rounded-full object-cover"
                         />
                       ) : (
@@ -250,7 +250,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -272,7 +272,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                             hover:file:bg-blue-100"
                         />
                       </div>
-                      
+
                       {avatarFile && (
                         <div className="mb-4">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -292,7 +292,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end">
                   <button
                     onClick={handleSaveProfile}
@@ -304,11 +304,11 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                 </div>
               </div>
             )}
-            
+
             {activeTab === 'quickReplies' && (
               <div>
                 <h3 className="text-lg font-medium mb-4">快捷回复</h3>
-                
+
                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
                   <h4 className="font-medium mb-2">添加新的快捷回复</h4>
                   <div className="mb-3">
@@ -343,7 +343,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                     添加快捷回复
                   </button>
                 </div>
-                
+
                 <h4 className="font-medium mb-2">您的快捷回复</h4>
                 {agentSettings?.quickReplies && agentSettings.quickReplies.length > 0 ? (
                   <div className="space-y-2">
@@ -367,14 +367,14 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                 )}
               </div>
             )}
-            
+
             {activeTab === 'welcome' && (
               <div>
                 <h3 className="text-lg font-medium mb-4">欢迎消息</h3>
                 <p className="text-gray-600 mb-4">
                   当您接受新的聊天时，此消息将自动发送。
                 </p>
-                
+
                 <div className="mb-4">
                   <textarea
                     value={welcomeMessage || agentSettings?.welcomeMessage || '您好！我能为您提供什么帮助？'}
@@ -383,7 +383,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                
+
                 <button
                   onClick={handleSaveWelcomeMessage}
                   className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center space-x-2"
@@ -418,7 +418,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                       二维码
                     </h4>
                     <div className="flex justify-center mb-4">
-                      <QRCodeSVG 
+                      <QRCodeSVG
                         value={getAgentShortLink()}
                         size={200}
                         level="H"
@@ -458,11 +458,11 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
                 </div>
               </div>
             )}
-            
+
             {activeTab === 'blocked' && (
               <div>
                 <h3 className="text-lg font-medium mb-4">已拉黑用户</h3>
-                
+
                 {blockedUsers.length > 0 ? (
                   <div className="space-y-2">
                     {blockedUsers.map(userId => (
@@ -489,7 +489,7 @@ export const AgentSettingsModal: React.FC<AgentSettingsModalProps> = ({
             {activeTab === 'license' && (
               <div className="p-6">
                 <h3 className="text-lg font-medium mb-4">许可证管理</h3>
-                
+
                 <div className="bg-gray-50 p-4 rounded-lg mb-4">
                   <div className="flex items-center justify-between">
                     <div>

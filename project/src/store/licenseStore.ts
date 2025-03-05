@@ -17,10 +17,12 @@ interface LicenseState {
   isLicenseValid: (key: string) => boolean;
   cleanupExpiredLicenses: () => void;
   getLicenseExpiry: (key: string) => number | null;
+  licenseKey: string;
 }
 
 export const useLicenseStore = create<LicenseState>((set, get) => ({
   licenseKeys: [],
+  licenseKey: '',
 
   generateLicenseKey: (expiresInDays) => {
     // 生成16位的随机密钥
@@ -64,7 +66,8 @@ export const useLicenseStore = create<LicenseState>((set, get) => ({
         l.key === key
           ? { ...l, usedBy: agentId }
           : l
-      )
+      ),
+      licenseKey: key
     }));
 
     return true;
